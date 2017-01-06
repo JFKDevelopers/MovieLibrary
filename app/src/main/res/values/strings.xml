@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">MovieLibrary</string>
+    <string name="MovieTitle">Add Movie</string>
+    <string name="movie_image">Movie Image</string>
+    <string name="YearListItem">"Year: "</string>
+
+    <string name="action_sortAZ">Sort: A-Z</string>
+    <string name="action_sortZA">Sort: Z-A</string>
+    <string name="action_sortYear">Sort: Year</string>
+    <string name="action_sortRating">Sort: Rating</string>
+
+    <string name="iconReferences">https://material.io/icons/, https://materialdesignicons.com/</string>
+    <string name="delete_all">Delete All</string>
+    <string name="addbutton">addButton</string>
+    <string name="barcode_scanner_button">barcode scanner button</string>
+</resources>
