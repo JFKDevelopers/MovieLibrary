@@ -54,15 +54,15 @@ public class DatabaseHandler extends SQLiteOpenHelper{
     void addMovie(Movie movie){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_ID, movie.getId());
+        values.put(KEY_ID, movie.getImdbID());
         values.put(KEY_TITLE, movie.getTitle());
         values.put(KEY_YEAR, movie.getYear());
-        values.put(KEY_RATING, movie.getRating());
-        values.put(KEY_POSTER, movie.getImgUrl());
+        values.put(KEY_RATING, movie.getRated());
+        values.put(KEY_POSTER, movie.getPoster());
         //Log.e("poster:", values.get(KEY_POSTER).toString());
 
         //Inserting row
-        db.insert(TABLE_MOVIES, movie.getId(), values);
+        db.insert(TABLE_MOVIES, movie.getImdbID(), values);
         //Log.e("Poster in DB: ",getMovie(movie.getId()).getImgUrl());
         db.close(); //closing database connection
     }
@@ -78,7 +78,8 @@ public class DatabaseHandler extends SQLiteOpenHelper{
             cursor.moveToFirst();
 
         Movie movie = new Movie(cursor.getString(0),cursor.getString(1),
-                cursor.getString(2),cursor.getString(3),cursor.getString(4),"");
+                cursor.getString(2),cursor.getString(3),cursor.getString(4),"","","","","",
+                "","","","","","","","","","");
         cursor.close();
         return movie;
     }
@@ -91,7 +92,9 @@ public class DatabaseHandler extends SQLiteOpenHelper{
         //looping through all rows and adding to list
         if(cursor.moveToFirst()) {
             do{
-                Movie movie = new Movie(cursor.getString(0),cursor.getString(1),cursor.getString(2),cursor.getString(3),cursor.getString(4),"");
+                Movie movie = new Movie(cursor.getString(0),cursor.getString(1),
+                        cursor.getString(2),cursor.getString(3),cursor.getString(4),"","","","","",
+                        "","","","","","","","","","");
                 /*movie.setId(cursor.getString(0));
                 movie.setTitle(cursor.getString(1));
                 movie.setYear(cursor.getString(2));
@@ -110,18 +113,18 @@ public class DatabaseHandler extends SQLiteOpenHelper{
         ContentValues values = new ContentValues();
         values.put(KEY_TITLE, movie.getTitle());
         values.put(KEY_YEAR, movie.getYear());
-        values.put(KEY_RATING, movie.getRating());
-        values.put(KEY_POSTER, movie.getImgUrl());
+        values.put(KEY_RATING, movie.getRated());
+        values.put(KEY_POSTER, movie.getPoster());
 
         return db.update(TABLE_MOVIES, values, KEY_ID + " = ?",
-                new String[] { movie.getId()});
+                new String[] { movie.getImdbID()});
     }
 
     //deleting single movie
     public void deleteMovie(Movie movie) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_MOVIES, KEY_ID + " = ?",
-                new String[] { movie.getId()});
+                new String[] { movie.getImdbID()});
         db.close();
     }
 

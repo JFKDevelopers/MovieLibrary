@@ -26,4 +26,11 @@
         android:id="@+id/action_deleteAll"
         android:orderInCategory="500"
         android:title="@string/delete_all" />
+    <item
+        android:id="@+id/item_undo_checkBox"
+         android:orderInCategory="600"
+        android:checkable="true"
+        android:checked="false"
+        android:title="@string/menu_checkbox_undo"
+        app:showAsAction="never"/>
 </menu>

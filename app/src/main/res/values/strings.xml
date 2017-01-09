@@ -13,4 +13,6 @@
     <string name="delete_all">Delete All</string>
     <string name="addbutton">addButton</string>
     <string name="barcode_scanner_button">barcode scanner button</string>
+    <string name="button_undo">Undo</string>
+    <string name="menu_checkbox_undo">Undo</string>
 </resources>
