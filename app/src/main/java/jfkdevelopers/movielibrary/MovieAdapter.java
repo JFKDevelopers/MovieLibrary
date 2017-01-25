@@ -1,11 +1,17 @@
 package jfkdevelopers.movielibrary;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
+import android.nfc.Tag;
+import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +21,19 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.google.gson.internal.bind.TypeAdapters.URL;
+
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
+    public final static String EXTRA_MESSAGE = "com.jfkdevelopers.movielibrary.MESSAGE";
+    public final static String SER_KEY = "com.jfkdevelopers.MovieLibrary.ser";
     private static final int PENDING_REMOVAL_TIMEOUT = 3000; //3 sec
     private List<Movie> movies;
     private List<Movie> moviesPendingRemoval;
@@ -32,7 +44,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
     private Handler handler = new Handler();
     private HashMap<Movie, Runnable> pendingRunnables = new HashMap<>();
 
-
+    private HashMap<String, Movie> movieMap = new HashMap<>();
     public MovieAdapter(){
         this.moviesPendingRemoval = new ArrayList<>();
     }
@@ -43,7 +55,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
         this.moviesPendingRemoval = new ArrayList<>();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public ImageView movieImage;
         public TextView movieTitle;
         public TextView movieYear;
@@ -51,15 +63,26 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
         public TextView movieGenre;
         //public TextView moviePlot;
         public Button undoButton;
+        public String id = "";
         public ViewHolder(View v){
             super(v);
+            v.setOnClickListener(this);
             movieImage = (ImageView) v.findViewById(R.id.cover);
             movieTitle = (TextView) v.findViewById(R.id.title);
             movieYear = (TextView) v.findViewById(R.id.year);
             movieRating = (TextView) v.findViewById(R.id.rating);
             movieGenre = (TextView) v.findViewById(R.id.genre);
-            //moviePlot = (TextView) v.findViewById(R.id.plot);
             undoButton = (Button) v.findViewById(R.id.undo_button);
+        }
+        @Override
+        public void onClick(View view){
+            Intent intent = new Intent(context,DetailActivity.class);
+            Bundle mBundle = new Bundle();
+            mBundle.putSerializable(SER_KEY,movieMap.get(id));
+            //String message = movieTitle.getText().toString();
+            //Toast.makeText(view.getContext(),message,Toast.LENGTH_LONG).show();
+            intent.putExtras(mBundle);
+            context.startActivity(intent);
         }
     }
 
@@ -100,8 +123,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
             try {
                 Picasso.with(context)
                         .load(movie.getPoster())
-                        .error(R.mipmap.ic_theaters_black_24dp)
                         .placeholder(R.mipmap.ic_theaters_black_24dp)
+                        .error(R.mipmap.ic_theaters_black_24dp)
                         .into(holder.movieImage);
                 holder.movieTitle.setText(movie.getTitle());
                 holder.movieRating.setText(movie.getRated());
@@ -110,10 +133,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
                 holder.movieGenre.setText(movie.getGenre());
                 holder.undoButton.setVisibility(View.GONE);
                 holder.undoButton.setOnClickListener(null);
+                holder.id = movie.getImdbID();
+                movieMap.put(movie.getImdbID(),movie);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            setAnimation(holder.itemView, position);
+            //setAnimation(holder.itemView, position);
         }
     }
 
@@ -123,11 +148,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
     }
 
     private void setAnimation(View viewToAnimate, int position){
-        if(position>lastPosition){
+/*        if(position>lastPosition){
             Animation animation = AnimationUtils.loadAnimation(context,android.R.anim.slide_in_left);
             viewToAnimate.startAnimation(animation);
             lastPosition = position;
-        }
+        }*/
     }
 
     public void setUndoOn(boolean undoOn){
@@ -138,7 +163,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
         return undoOn;
     }
 
-    public void pendingRemoval(int position){
+    public void pendingRemoval(int position, final DatabaseHandler db, final RecyclerView rv){
         final Movie movie = movies.get(position);
         if(!moviesPendingRemoval.contains(movie)) {
             moviesPendingRemoval.add(movie);
@@ -147,7 +172,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
             Runnable pendingRemovalRunnable = new Runnable(){
                 @Override
                 public void run(){
-                    remove(movies.indexOf(movie));
+                    remove(movies.indexOf(movie),db,rv);
                 }
             };
             handler.postDelayed(pendingRemovalRunnable, PENDING_REMOVAL_TIMEOUT);
@@ -155,53 +180,30 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
         }
     }
 
-    public void remove(int position){
+    public void remove(int position, DatabaseHandler db, RecyclerView rv){
         Movie movie = movies.get(position);
         if(moviesPendingRemoval.contains(movie)){
             moviesPendingRemoval.remove(movie);
         }
         if(movies.contains(movie)){
+            Snackbar snackbar = Snackbar
+                    .make(rv, movies.get(position).getTitle() + " deleted", Snackbar.LENGTH_LONG);
+            snackbar.show();
+            db.deleteMovie(movies.get(position));
+            //MainActivity.db.deleteMovie(movies.get(position));
             movies.remove(position);
             notifyItemRemoved(position);
+
         }
     }
 
-    public boolean isPendingremoval(int position){
+    public boolean isPendingRemoval(int position){
         Movie movie = movies.get(position);
         return moviesPendingRemoval.contains(movie);
     }
-   /* public MovieAdapter(Context context, List<Movie> movies) {
-        super(context,0,movies);
-    }
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        Movie movie = getItem(position);
-
-        if(convertView==null){
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item,parent,false);
-        }
-
-        ImageView movieImage = (ImageView) convertView.findViewById(R.id.cover);
-        TextView movieTitle = (TextView) convertView.findViewById(R.id.title);
-        TextView movieYear = (TextView) convertView.findViewById(R.id.year);
-        TextView movieRating = (TextView) convertView.findViewById(R.id.rating);
-        TextView movieGenre = (TextView) convertView.findViewById(R.id.genre);
-        //TextView moviePlot = (TextView) convertView.findViewById(R.id.plot);
-        try {
-            Picasso.with(this.getContext())
-                    .load(movie.getImgUrl())
-                    .error(R.mipmap.ic_theaters_black_24dp)
-                    .placeholder(R.mipmap.ic_theaters_black_24dp)
-                    .into(movieImage);
-            movieTitle.setText(movie.getTitle());
-            movieYear.setText(movie.getYear());
-            movieRating.setText(movie.getRating());
-            movieGenre.setText(movie.getGenre());
-            //moviePlot.setText(movie.getPlot());
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return convertView;
+  /*  public void setClickListener(ItemClickListener itemClickListener){
+        this.clickListener = itemClickListener;
     }*/
+
 }

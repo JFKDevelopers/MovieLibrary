@@ -1,7 +1,10 @@
 package jfkdevelopers.movielibrary;
 
+import java.io.Serializable;
 
-public class Movie {
+public class Movie implements Serializable{
+    private static final long serialVersionUID = -7060210544600464481L;
+    private String imdbID;
     private String Title;
     private String Year;
     private String Rated;
@@ -19,14 +22,18 @@ public class Movie {
     private String Metascore;
     private String imdbRating;
     private String imdbVotes;
-    private String imdbID;
     private String Type;
     private String Response;
 
-    public Movie(String title, String year, String rated, String released, String runtime, String genre, String director, String writer, String actors, String plot, String language, String country, String awards, String poster, String metascore, String imdbRating, String imdbVotes, String imdbID, String type, String response) {
+    public Movie(String imdbID, String title, String year, String rated, String poster, String released,
+                 String runtime, String genre, String director, String writer, String actors, String plot,
+                 String language, String country, String awards, String metascore, String imdbRating,
+                 String imdbVotes, String type, String response) {
+        this.imdbID = imdbID;
         this.Title = title;
         this.Year = year;
         this.Rated = rated;
+        this.Poster = poster;
         this.Released = released;
         this.Runtime = runtime;
         this.Genre = genre;
@@ -37,11 +44,9 @@ public class Movie {
         this.Language = language;
         this.Country = country;
         this.Awards = awards;
-        this.Poster = poster;
         this.Metascore = metascore;
         this.imdbRating = imdbRating;
         this.imdbVotes = imdbVotes;
-        this.imdbID = imdbID;
         this.Type = type;
         this.Response = response;
     }

@@ -4,10 +4,11 @@
     <string name="movie_image">Movie Image</string>
     <string name="YearListItem">"Year: "</string>
 
-    <string name="action_sortAZ">Sort: A-Z</string>
-    <string name="action_sortZA">Sort: Z-A</string>
-    <string name="action_sortYear">Sort: Year</string>
-    <string name="action_sortRating">Sort: Rating</string>
+    <string name="action_sort">Sort</string>
+    <string name="action_sortAZ">A-Z</string>
+    <string name="action_sortZA">Z-A</string>
+    <string name="action_sortYear">Year</string>
+    <string name="action_sortRating">Rating</string>
 
     <string name="iconReferences">https://material.io/icons/, https://materialdesignicons.com/</string>
     <string name="delete_all">Delete All</string>
@@ -15,4 +16,11 @@
     <string name="barcode_scanner_button">barcode scanner button</string>
     <string name="button_undo">Undo</string>
     <string name="menu_checkbox_undo">Undo</string>
+    <string name="btn_ok">OK</string>
+    <string name="search">Search</string>
+    <string name="search_hint">Search for Movie</string>
+    <string name="movie_poster">Movie Poster</string>
+    <string name="title_activity_detail">DetailActivity</string>
+    <string name="add_new">Add New</string>
+    <string name="search_button">SEARCH</string>
 </resources>

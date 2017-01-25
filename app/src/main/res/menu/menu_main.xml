@@ -2,35 +2,47 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="jfkdevelopers.movielibrary.MainActivity">
-    <item
-        android:id="@+id/action_sortAZ"
+    <!--<item
+        android:id="@+id/search"
         android:orderInCategory="100"
-        android:title="@string/action_sortAZ"
-        app:showAsAction="never" />
+        android:title="@string/search"
+        android:icon="@drawable/magnify"
+        app:showAsAction="collapseActionView|ifRoom"
+        android:actionViewClass="android.widget.SearchView" />-->
     <item
-        android:id="@+id/action_sortZA"
+        android:id="@+id/action_addNew"
+        android:orderInCategory="100"
+        android:title="@string/add_new"
+        />
+    <item
+        android:id="@+id/action_sort"
         android:orderInCategory="200"
+        android:title="@string/action_sort"
+        app:showAsAction="never" />
+    <!--<item
+        android:id="@+id/action_sortZA"
+        android:orderInCategory="300"
         android:title="@string/action_sortZA"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_sortYear"
-        android:orderInCategory="300"
+        android:orderInCategory="400"
         android:title="@string/action_sortYear"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_sortRating"
-        android:orderInCategory="400"
+        android:orderInCategory="500"
         android:title="@string/action_sortRating"
-        app:showAsAction="never" />
+        app:showAsAction="never" />-->
     <item
         android:id="@+id/action_deleteAll"
-        android:orderInCategory="500"
+        android:orderInCategory="600"
         android:title="@string/delete_all" />
-    <item
+<!--    <item
         android:id="@+id/item_undo_checkBox"
-         android:orderInCategory="600"
+         android:orderInCategory="700"
         android:checkable="true"
         android:checked="false"
         android:title="@string/menu_checkbox_undo"
-        app:showAsAction="never"/>
+        app:showAsAction="never"/>-->
 </menu>

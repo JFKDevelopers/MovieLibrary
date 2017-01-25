@@ -15,21 +15,23 @@
     android:paddingTop="4dp"
     android:paddingEnd="4dp"
     android:paddingStart="4dp">
-    <LinearLayout
+<!--    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingTop="4dp"
         android:paddingBottom="4dp"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
         android:weightSum="9">
    <EditText
        android:id="@+id/search"
        android:layout_width="0dp"
        android:layout_height="wrap_content"
        android:hint="@string/MovieTitle"
-       android:layout_weight="7" />
+       android:layout_weight="8"
+       android:imeOptions="actionGo"
+       android:inputType="text"/>
    <ImageButton
         android:id="@+id/addBtn"
         android:layout_width="0dp"
@@ -38,8 +40,8 @@
         android:background="@android:color/transparent"
         android:src="@mipmap/ic_add_black_24dp"
         android:contentDescription="@string/addbutton"
-        android:scaleType="fitCenter"/>
-    <ImageButton
+        android:scaleType="fitCenter" />
+ &lt;!&ndash;   <ImageButton
         android:id="@+id/scanBtn"
         android:layout_width="0dp"
         android:layout_height="30dp"
@@ -48,8 +50,8 @@
         android:src="@mipmap/ic_barcode_scan_black_24dp"
         android:contentDescription="@string/barcode_scanner_button"
         android:scaleType="fitCenter"
-        android:baselineAlignBottom="false"/>
-    </LinearLayout>
+        android:baselineAlignBottom="false"/>&ndash;&gt;
+    </LinearLayout>-->
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:scrollbars="vertical"
