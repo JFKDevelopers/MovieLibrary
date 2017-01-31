@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -36,39 +37,42 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.gson.Gson;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 //Pre-testing:
+//want to be able to add multiple movies from search activity
+//need to rewrite DatabaseHandler
 //decide which content to include on main page and detail page
-//create search activity
 
 //Not necessary, but would like to have:
 //Have app remember user's sorting preference and add movies in that order
 //include letters/years/rating depending on how it's sorted (like an index)
-//have a "detail page" which gives more information when a movie is clicked on
 //maybe include tomato meter rating somewhere? - will need to update base url.
-//////eventually include user rating, type of movie [physical (DVD/BluRay/VHS?) or Streaming(PC/Netflix/Hulu/Amazon/etc.)] //need to use tmdb for this
-public class MainActivity extends AppCompatActivity implements OnClickListener,ItemClickListener{
+//////eventually include user custom rating, type of movie [physical (DVD/BluRay/VHS?) or Streaming(PC/Netflix/Hulu/Amazon/etc.)]
+public class MainActivity extends AppCompatActivity implements ItemClickListener{
 
     public final static String EXTRA_MESSAGE = "com.jfkdevelopers.movielibrary.MESSAGE";
     private String TAG = MainActivity.class.getSimpleName();
     private ProgressDialog pDialog;
-    private static String urlStart = "http://www.omdbapi.com/?t=";
-    private static String urlEnd = "&plot=short&r=json"; //add tomatoes=true to get ratings from Rotten Tomatoes
-    private static String url = urlStart + "" + urlEnd;
-    //private static String upcUrlStart = "http://api.upcdatabase.org/json/86b095cadd53dcdde3825d0d862adf3a/"; //86b095cadd53dcdde3825d0d862adf3a - API Key
-    //private static String upcUrl = upcUrlStart + "";
-    final CharSequence[] sortOptions = {"Title: A-Z","Title: Z-A","Year","Rating"};
+    final CharSequence[] sortOptions = {"A-Z","Z-A","Year","Rating"};
+    /*final CharSequence[] sortOptions = {getString(R.string.action_sortAZ),
+            getString(R.string.action_sortZA),
+            getString(R.string.action_sortYear),
+            getString(R.string.action_sortRating)};*/
+
+    public String url = "";
     Context context = this;
     List<Movie> movies;
     MovieAdapter mAdapter;
     RecyclerView rv;
     RecyclerView.LayoutManager rvLM;
-    /*EditText input;
-    ImageButton imgBtn;*/
-    //ImageButton scnBtn;
     public DatabaseHandler db = new DatabaseHandler(this);
 
     @Override
@@ -78,9 +82,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,I
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        /*input = (EditText) findViewById(R.id.search);
-        imgBtn = (ImageButton) findViewById(R.id.addBtn);*/
-        //scnBtn = (ImageButton) findViewById(R.id.scanBtn);
         rv = (RecyclerView) findViewById(R.id.recyclerView);
 
         rv.setHasFixedSize(true);
@@ -93,22 +94,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,I
         rv.setAdapter(mAdapter);
         setUpItemTouchHelper();
         setUpAnimationDecoratorHelper();
-        //Log.e(TAG,db.getTableAsString());
-
-        //imgBtn.setOnClickListener(this);
-        //scnBtn.setOnClickListener(this);
-
-        /*input.setOnEditorActionListener(new TextView.OnEditorActionListener(){
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event){
-                if(actionId == EditorInfo.IME_ACTION_GO){
-                    getMovie();
-                    return true;
-                }
-                return false;
-            }
-        });*/
-
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -116,18 +101,23 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,I
             public void onClick(View view) {
                 final AlertDialog searchDialog;
                 AlertDialog.Builder dialog = new AlertDialog.Builder(context);
-                dialog.setTitle("Add Movie");
+                dialog.setTitle(R.string.searchDialogTitle);
                 final EditText input = new EditText(context);
-                //input.setPadding(4,4,4,4);
-                input.setHint("Title");
+                input.setHint(R.string.searchDialogHint);
                 dialog.setView(input);
                 dialog.setPositiveButton(R.string.search_button,new DialogInterface.OnClickListener(){
                     @Override
                     public void onClick(DialogInterface di, int item){
-                        Intent intent = new Intent(context,Search.class);
-                        String message = input.getText().toString();
-                        intent.putExtra(EXTRA_MESSAGE,message);
-                        startActivity(intent);
+                        if(connectedToNetwork()) {
+                            Intent intent = new Intent(context, Search.class);
+                            String message = input.getText().toString();
+                            intent.putExtra(EXTRA_MESSAGE, message);
+                            startActivityForResult(intent, 1);
+                        }
+                        else Toast.makeText(getApplicationContext(),
+                                R.string.noInternetMessage,
+                                Toast.LENGTH_LONG)
+                                .show();
                     }
                 });
                 dialog.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -140,98 +130,29 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,I
                 searchDialog.show();
             }
         });
-
     }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode,resultCode,data);
+        if(requestCode==1){
+            if(resultCode == RESULT_OK){
+                int id = data.getIntExtra("movieId",0);
+                url="https://api.themoviedb.org/3/movie/"+id+"?api_key=13de0f310da7852b09b07e6a9f3a16ae";
+                new GetMovie().execute();
+            }
+        }
+    }
+
+    //If movie is clicked, opens movie detail view
     @Override
     public void onClick(View view, int position){
-        final Movie movie = movies.get(position);
-        Intent i = new Intent(this, DetailActivity.class); //Update main activity to new activity which will be the detail page for the Movie
-        i.putExtra("Title", movie.getTitle());
-        i.putExtra("ID", movie.getImdbID());
-        Log.e(TAG,"SUCCESS");
-        startActivity(i);
+            final Movie movie = movies.get(position);
+            Intent i = new Intent(this, DetailActivity.class); //Update main activity to new activity which will be the detail page for the Movie
+            i.putExtra("Title", movie.getTitle());
+            i.putExtra("ID", movie.getId());
+            Log.e(TAG, "SUCCESS");
+            startActivity(i);
     }
-
-    public void onClick(View v) {
-
-        if (connectedToNetwork()) {
-            //barcode scanner
-            /*if (v.getId() == R.id.scanBtn) {
-                url = "";
-                upcUrl = "";
-                IntentIntegrator scanIntegrator = new IntentIntegrator(this);
-                scanIntegrator.initiateScan();
-            }*/
-            //text entry
-            if (v.getId() == R.id.rating) {
-                url = "";
-                //upcUrl = "";
-                /*String temp = input.getText().toString(); // get text from search bar
-                input.setText(""); // clears search bar
-                */Boolean test = true;
-                //test to see if movie title already exists
-                for (Movie m : movies) {
-                    //if (m.getTitle().toLowerCase().equals(temp.toLowerCase())) test = false;
-                }
-                //if movie does not already exist, add it in
-                if (test) {
-                    //url = urlStart + temp.replace(" ", "+") + urlEnd; // combine movie title with the rest of the url
-                    //making a request to url and getting response
-                    new GetMovies().execute();
-                    //dismiss the keyboard when add button is clicked but only if movie doesn't already exist in list
-                    InputMethodManager inputManager = (InputMethodManager)
-                            getSystemService(Context.INPUT_METHOD_SERVICE);
-                    inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                            InputMethodManager.HIDE_NOT_ALWAYS);
-                    //Handler will wait 1 second before notifying data set change in order to property update the ListView.
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            mAdapter.notifyDataSetChanged();
-                            Log.e(TAG,movies.get(movies.size()-1).toString());
-                        }
-                    }, 2000);
-                }
-                //toast if movie already exists in the list
-                else Toast.makeText(getApplicationContext(),
-                        "Movie is already in list",
-                        Toast.LENGTH_LONG)
-                        .show();
-            }
-        } else Toast.makeText(getApplicationContext(),
-                "No internet connection. Please try again later.",
-                Toast.LENGTH_LONG)
-                .show();
-    }
-
-    //Barcode scanner results
-/*    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-        if (scanningResult != null) {
-            String scanContent = scanningResult.getContents();
-            upcUrl = upcUrlStart + scanContent;
-            new GetTitleFromUPC().execute();
-            if (!url.equals("")) {
-                new GetMovies().execute();
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.notifyDataSetChanged();
-                    }
-                }, 1000);
-            } else {
-                Toast toast = Toast.makeText(getApplicationContext(),
-                        "No scan data received!", Toast.LENGTH_SHORT);
-                toast.show();
-            }
-        } else {
-            Toast toast = Toast.makeText(getApplicationContext(),
-                    "No scan data received!", Toast.LENGTH_SHORT);
-            toast.show();
-        }
-    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -255,39 +176,13 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,I
         // Handle action bar item clicks here. The action bar will automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        //noinspection SimplifiableIfStatement
+
         /*if(id == R.id.item_undo_checkBox){
             item.setChecked(!item.isChecked());
             ((MovieAdapter)rv.getAdapter()).setUndoOn(item.isChecked());
         }*/
 
-        if(id == R.id.action_addNew){
-            /*final AlertDialog searchDialog;
-            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-            dialog.setTitle("Add Movie");
-            final EditText input = new EditText(this);
-            //input.setPadding(4,4,4,4);
-            input.setHint("Title");
-            dialog.setView(input);
-            dialog.setPositiveButton(R.string.search_button,new DialogInterface.OnClickListener(){
-               @Override
-                public void onClick(DialogInterface di, int item){
-                    Intent intent = new Intent(context,Search.class);
-                    String message = input.getText().toString();
-                    intent.putExtra(EXTRA_MESSAGE,message);
-                    startActivity(intent);
-               }
-            });
-            dialog.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface di, int which) {
-                    di.cancel();
-                }
-            });
-            searchDialog = dialog.create();
-            searchDialog.show();*/
-        }
-        else if(id == R.id.action_sort){
+        if(id == R.id.action_sort){
             final AlertDialog sortDialog;
             AlertDialog.Builder dialog = new AlertDialog.Builder(this);
             dialog.setTitle("Sort By");
@@ -312,23 +207,23 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,I
                             });
                             break;
                         case 2: //Sort by year
-                            Collections.sort(movies,new Comparator<Movie>(){
+                           /* Collections.sort(movies,new Comparator<Movie>(){
                                 @Override
                                 public int compare(Movie m1, Movie m2){
                                     if(!m1.getYear().equals(m2.getYear())) return m1.getYear().compareTo(m2.getYear());
                                     return m1.getTitle().compareTo(m2.getTitle());
                                 }
-                            });
+                            });*/
                             break;
                         case 3: //Sort by rating
-                            Collections.sort(movies,new Comparator<Movie>(){
+                            /*Collections.sort(movies,new Comparator<Movie>(){
                                 @Override
                                 public int compare(Movie m1, Movie m2){
                                     if(!m1.getRated().equals(m2.getRated())) return m1.getRated().compareTo(m2.getRated());
                                     else if(m1.getYear().equals(m2.getYear())) return m1.getTitle().compareTo(m2.getTitle());
                                     return m1.getYear().compareTo(m2.getYear());
                                 }
-                            });
+                            });*/
                             break;
                         default:
                             break;
@@ -347,9 +242,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,I
         else if (id == R.id.action_deleteAll) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setCancelable(true);
-            builder.setTitle("Are you sure you want to delete all items?");
-            builder.setMessage("This process can not be undone");
-            builder.setPositiveButton("Delete",
+            builder.setTitle(R.string.confirmDialog);
+            builder.setPositiveButton(R.string.confirm,
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -369,113 +263,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,I
         }
         return super.onOptionsItemSelected(item);
     }
-
-    private class GetMovies extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // Showing progress dialog
-            pDialog = new ProgressDialog(MainActivity.this);
-            pDialog.setMessage("Please wait...");
-            pDialog.setCancelable(false);
-            pDialog.show();
-        }
-
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            HttpHandler sh = new HttpHandler();
-            // Making a request to url and getting response
-            String jsonStr = sh.makeServiceCall(url);
-            Log.e(TAG, "Response from url: " + jsonStr);
-            if (jsonStr != null) {
-                try {
-                    Gson gson = new Gson();
-                    Movie m = gson.fromJson(jsonStr, Movie.class);
-                    if(m.getTitle()!=null) {
-                        db.addMovie(m);
-                        movies.add(m);
-                    }
-                    else{
-                        Snackbar snackbar = Snackbar
-                                .make(rv, "Movie not found", Snackbar.LENGTH_LONG);
-                        snackbar.show();
-                    }
-                } catch (final Exception e) {
-                    Log.e(TAG, "Json parsing error: " + e.getMessage());
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(),
-                                    url.substring(url.indexOf("?t=") + 3, url.indexOf("&p")).replace("+", " ") + " not found",
-                                    Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                    });
-                }
-            } else {
-                Log.e(TAG, "Couldn't get json from server.");
-                Toast.makeText(getApplicationContext(),
-                        "Error downloading information",
-                        Toast.LENGTH_LONG)
-                        .show();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            // Dismiss the progress dialog
-            if (pDialog.isShowing())
-                pDialog.dismiss();
-        }
-    }
-
-    //handles barcode scan to get title of movie
-    /*private class GetTitleFromUPC extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            HttpHandler sh = new HttpHandler();
-            // Making a request to url and getting response
-            String jsonStr = sh.makeServiceCall(upcUrl);
-            Log.e(TAG, "Response from upcURL: " + jsonStr);
-            if (jsonStr != null) {
-                try {
-                    JSONObject c = new JSONObject(jsonStr);
-
-                    String id = c.getString("itemname");
-                    if (id != null) {
-                        id = id.substring(0, id.indexOf(":"));
-                        url = urlStart + id.replace(" ", "+") + urlEnd;
-                    }
-                } catch (final JSONException e) {
-                    Log.e(TAG, "Json parsing error: " + e.getMessage());
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                        }
-                    });
-                }
-            } else {
-                Log.e(TAG, "Couldn't get json from server.");
-                Toast.makeText(getApplicationContext(),
-                        "Error downloading information",
-                        Toast.LENGTH_LONG)
-                        .show();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-        }
-    }*/
 
     public boolean connectedToNetwork() {
         boolean connected = false;
@@ -565,7 +352,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,I
 
     private void setUpAnimationDecoratorHelper() {
         rv.addItemDecoration(new RecyclerView.ItemDecoration() {
-
             // we want to cache this and not allocate anything repeatedly in the onDraw method
             Drawable background;
             boolean initiated;
@@ -577,33 +363,24 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,I
 
             @Override
             public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-
-                if (!initiated) {
-                    init();
-                }
-
+                if (!initiated) init();
                 // only if animation is in progress
                 if (parent.getItemAnimator().isRunning()) {
-
                     // some items might be animating down and some items might be animating up to close the gap left by the removed item
                     // this is not exclusive, both movement can be happening at the same time
                     // to reproduce this leave just enough items so the first one and the last one would be just a little off screen
                     // then remove one from the middle
-
                     // find first child with translationY > 0
                     // and last one with translationY < 0
                     // we're after a rect that is not covered in recycler-view views at this point in time
                     View lastViewComingDown = null;
                     View firstViewComingUp = null;
-
                     // this is fixed
                     int left = 0;
                     int right = parent.getWidth();
-
                     // this we need to find out
                     int top = 0;
                     int bottom = 0;
-
                     // find relevant translating views
                     int childCount = parent.getLayoutManager().getChildCount();
                     for (int i = 0; i < childCount; i++) {
@@ -618,7 +395,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,I
                             }
                         }
                     }
-
                     if (lastViewComingDown != null && firstViewComingUp != null) {
                         // views are coming down AND going up to fill the void
                         top = lastViewComingDown.getBottom() + (int) lastViewComingDown.getTranslationY();
@@ -632,50 +408,64 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,I
                         top = firstViewComingUp.getTop();
                         bottom = firstViewComingUp.getTop() + (int) firstViewComingUp.getTranslationY();
                     }
-
                     background.setBounds(left, top, right, bottom);
                     background.draw(c);
-
                 }
                 super.onDraw(c, parent, state);
             }
-
         });
     }
-        public void getMovie(){
-            //upcUrl = "";
-            /*url = "";
-            String temp = input.getText().toString(); // get text from search bar
-            input.setText(""); // clears search bar
-            Boolean test = true;
-            //test to see if movie title already exists
-            for (Movie m : movies) {
-                if (m.getTitle().toLowerCase().equals(temp.toLowerCase())) test = false;
+
+    private class GetMovie extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Showing progress dialog
+            pDialog = new ProgressDialog(MainActivity.this);
+            pDialog.setMessage("Please wait...");
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            HttpHandler sh = new HttpHandler();
+            // Making a request to url and getting response
+            String jsonStr = sh.makeServiceCall(url);
+            Log.e(TAG, "Response from url: " + jsonStr);
+            if (jsonStr != null) {
+                try {
+                        Gson gson = new Gson();
+                        Movie m = gson.fromJson(jsonStr,Movie.class);
+                        db.addMovie(m);
+                        movies.add(m);
+                } catch (final Exception e) {
+                    Log.e(TAG, "Json parsing error: " + e.getMessage());
+                    /*runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(),
+                                    url.substring(url.indexOf("ry=") + 3) + " not found",
+                                    Toast.LENGTH_LONG)
+                                    .show();
+                        }
+                    });*/
+                }
+            } else {
+                Log.e(TAG, "Couldn't get json from server.");
+                Toast.makeText(getApplicationContext(),
+                        "Error downloading information",
+                        Toast.LENGTH_LONG)
+                        .show();
             }
-            //if movie does not already exist, add it in *//*
-            if (test) {
-                url = urlStart + temp.replace(" ", "%20") + urlEnd; // combine movie title with the rest of the url
-                //making a request to url and getting response
-                new GetMovies().execute();
-                //dismiss the keyboard when add button is clicked but only if movie doesn't already exist in list
-                InputMethodManager inputManager = (InputMethodManager)
-                        getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                        InputMethodManager.HIDE_NOT_ALWAYS);
-                //Handler will wait 1 second before notifying data set change in order to property update the ListView.
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.notifyDataSetChanged();
-                        Log.e(TAG,movies.get(movies.size()-1).toString());
-                    }
-                }, 2000);
-            }
-            //toast if movie already exists in the list
-            else Toast.makeText(getApplicationContext(),
-                    "Movie is already in list",
-                    Toast.LENGTH_LONG)
-                    .show();*/
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            // Dismiss the progress dialog
+            if (pDialog.isShowing())
+                pDialog.dismiss();
+            mAdapter.notifyDataSetChanged();
+        }
     }
 }

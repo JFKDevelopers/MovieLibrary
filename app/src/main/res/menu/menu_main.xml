@@ -10,30 +10,10 @@
         app:showAsAction="collapseActionView|ifRoom"
         android:actionViewClass="android.widget.SearchView" />-->
     <item
-        android:id="@+id/action_addNew"
-        android:orderInCategory="100"
-        android:title="@string/add_new"
-        />
-    <item
         android:id="@+id/action_sort"
         android:orderInCategory="200"
         android:title="@string/action_sort"
         app:showAsAction="never" />
-    <!--<item
-        android:id="@+id/action_sortZA"
-        android:orderInCategory="300"
-        android:title="@string/action_sortZA"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_sortYear"
-        android:orderInCategory="400"
-        android:title="@string/action_sortYear"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_sortRating"
-        android:orderInCategory="500"
-        android:title="@string/action_sortRating"
-        app:showAsAction="never" />-->
     <item
         android:id="@+id/action_deleteAll"
         android:orderInCategory="600"

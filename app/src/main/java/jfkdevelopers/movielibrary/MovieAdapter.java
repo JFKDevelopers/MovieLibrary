@@ -19,6 +19,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,7 +33,7 @@ import java.util.List;
 import static com.google.gson.internal.bind.TypeAdapters.URL;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
-    public final static String EXTRA_MESSAGE = "com.jfkdevelopers.movielibrary.MESSAGE";
+    //public final static String EXTRA_MESSAGE = "com.jfkdevelopers.movielibrary.MESSAGE";
     public final static String SER_KEY = "com.jfkdevelopers.MovieLibrary.ser";
     private static final int PENDING_REMOVAL_TIMEOUT = 3000; //3 sec
     private List<Movie> movies;
@@ -44,7 +45,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
     private Handler handler = new Handler();
     private HashMap<Movie, Runnable> pendingRunnables = new HashMap<>();
 
-    private HashMap<String, Movie> movieMap = new HashMap<>();
+    private HashMap<Integer, Movie> movieMap = new HashMap<>();
     public MovieAdapter(){
         this.moviesPendingRemoval = new ArrayList<>();
     }
@@ -61,9 +62,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
         public TextView movieYear;
         public TextView movieRating;
         public TextView movieGenre;
-        //public TextView moviePlot;
-        public Button undoButton;
-        public String id = "";
+        public int id = -1;
         public ViewHolder(View v){
             super(v);
             v.setOnClickListener(this);
@@ -72,15 +71,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
             movieYear = (TextView) v.findViewById(R.id.year);
             movieRating = (TextView) v.findViewById(R.id.rating);
             movieGenre = (TextView) v.findViewById(R.id.genre);
-            undoButton = (Button) v.findViewById(R.id.undo_button);
         }
         @Override
         public void onClick(View view){
             Intent intent = new Intent(context,DetailActivity.class);
             Bundle mBundle = new Bundle();
             mBundle.putSerializable(SER_KEY,movieMap.get(id));
-            //String message = movieTitle.getText().toString();
-            //Toast.makeText(view.getContext(),message,Toast.LENGTH_LONG).show();
             intent.putExtras(mBundle);
             context.startActivity(intent);
         }
@@ -105,36 +101,23 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
             holder.movieRating.setVisibility(View.GONE);
             holder.movieYear.setVisibility(View.GONE);
             holder.movieGenre.setVisibility(View.GONE);
-            holder.undoButton.setVisibility(View.VISIBLE);
-            holder.undoButton.setOnClickListener(new View.OnClickListener(){
-               @Override
-                public void onClick(View v){
-                   Runnable pendingRemovalRunnable = pendingRunnables.get(movie);
-                   pendingRunnables.remove(movie);
-                   if(pendingRemovalRunnable!=null){
-                       handler.removeCallbacks(pendingRemovalRunnable);
-                   }
-                   moviesPendingRemoval.remove(movie);
-                   notifyItemChanged(movies.indexOf(movie));
-               }
-            });
         }
         else {
             try {
                 Picasso.with(context)
-                        .load(movie.getPoster())
+                        .load("https://image.tmdb.org/t/p/w500" + movie.getPosterPath())
                         .placeholder(R.mipmap.ic_theaters_black_24dp)
                         .error(R.mipmap.ic_theaters_black_24dp)
                         .into(holder.movieImage);
                 holder.movieTitle.setText(movie.getTitle());
-                holder.movieRating.setText(movie.getRated());
-                holder.movieYear.setText(movie.getYear());
+                holder.movieRating.setText("");
+                if(movie.getReleaseDate().length()>=4) holder.movieYear.setText(movie.getReleaseDate().substring(0,4));
+                else holder.movieYear.setText("n/a");
                 //moviePlot.setText(movie.getPlot());
-                holder.movieGenre.setText(movie.getGenre());
-                holder.undoButton.setVisibility(View.GONE);
-                holder.undoButton.setOnClickListener(null);
-                holder.id = movie.getImdbID();
-                movieMap.put(movie.getImdbID(),movie);
+                holder.movieGenre.setText(movie.getGenres());
+                //holder.undoButton.setOnClickListener(null);
+                holder.id = movie.getId();
+                movieMap.put(movie.getId(),movie);
             } catch (Exception e) {
                 e.printStackTrace();
             }

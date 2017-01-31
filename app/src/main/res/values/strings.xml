@@ -23,4 +23,9 @@
     <string name="title_activity_detail">DetailActivity</string>
     <string name="add_new">Add New</string>
     <string name="search_button">SEARCH</string>
+    <string name="confirm">Confirm</string>
+    <string name="confirmDialog">Confirm that you wish to delete all items?</string>
+    <string name="searchDialogTitle">Add Movie</string>
+    <string name="searchDialogHint">Title</string>
+    <string name="noInternetMessage">No internet connection</string>
 </resources>
