@@ -202,7 +202,6 @@ public class Movie implements Serializable{
                 for (Genres g : genres) {
                     out = out + genreMap.get(g.id) + ", ";
                 }
-                Log.e("genres:", out.substring(0, out.length() - 2));
                 return out.substring(0, out.length() - 2);
             } else return "";
     }
@@ -420,7 +419,7 @@ public class Movie implements Serializable{
                 '}';
     }
 
-    public static class BelongsToCollection {
+    public static class BelongsToCollection implements Serializable{
         @SerializedName("id")
         public int id;
         @SerializedName("name")
@@ -431,28 +430,28 @@ public class Movie implements Serializable{
         public String backdropPath;
     }
 
-    public static class Genres {
+    public static class Genres implements Serializable{
         @SerializedName("id")
         public int id;
         @SerializedName("name")
         public String name;
     }
 
-    public static class ProductionCompanies {
+    public static class ProductionCompanies implements Serializable{
         @SerializedName("name")
         public String name;
         @SerializedName("id")
         public int id;
     }
 
-    public static class ProductionCountries {
+    public static class ProductionCountries implements Serializable{
         @SerializedName("iso_3166_1")
         public String iso31661;
         @SerializedName("name")
         public String name;
     }
 
-    public static class SpokenLanguages {
+    public static class SpokenLanguages implements Serializable{
         @SerializedName("iso_639_1")
         public String iso6391;
         @SerializedName("name")

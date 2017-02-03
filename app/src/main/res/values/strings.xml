@@ -1,9 +1,10 @@
 <resources>
-    <string name="app_name">MovieLibrary</string>
+    <string name="app_name">Movies</string>
+    <string name="title_activity_detail"> </string>
+
     <string name="MovieTitle">Add Movie</string>
     <string name="movie_image">Movie Image</string>
     <string name="YearListItem">"Year: "</string>
-
     <string name="action_sort">Sort</string>
     <string name="action_sortAZ">A-Z</string>
     <string name="action_sortZA">Z-A</string>
@@ -20,7 +21,7 @@
     <string name="search">Search</string>
     <string name="search_hint">Search for Movie</string>
     <string name="movie_poster">Movie Poster</string>
-    <string name="title_activity_detail">DetailActivity</string>
+
     <string name="add_new">Add New</string>
     <string name="search_button">SEARCH</string>
     <string name="confirm">Confirm</string>
@@ -28,4 +29,5 @@
     <string name="searchDialogTitle">Add Movie</string>
     <string name="searchDialogHint">Title</string>
     <string name="noInternetMessage">No internet connection</string>
+    <string name="movie_backdrop">Movie Backdrop</string>
 </resources>

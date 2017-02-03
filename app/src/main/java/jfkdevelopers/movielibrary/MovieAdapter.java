@@ -114,7 +114,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
                 if(movie.getReleaseDate().length()>=4) holder.movieYear.setText(movie.getReleaseDate().substring(0,4));
                 else holder.movieYear.setText("n/a");
                 //moviePlot.setText(movie.getPlot());
-                holder.movieGenre.setText(movie.getGenres());
+                holder.movieGenre.setText(movie.genreString);
                 //holder.undoButton.setOnClickListener(null);
                 holder.id = movie.getId();
                 movieMap.put(movie.getId(),movie);

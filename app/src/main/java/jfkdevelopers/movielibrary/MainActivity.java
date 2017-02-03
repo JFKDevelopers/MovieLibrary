@@ -46,15 +46,24 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
+//STORE JSON TEXT IN DB INSTEAD OF ALL ELEMENTS OF MOVIE...DUH.
+////this should also reduce size of data stored on device.
+////however need to make sure there are no string size limitations to what is stored in the DB per item
+
+//&append_to_response=credits //this will give cast and crew from the movie appended to the response.
+
 //Pre-testing:
-//want to be able to add multiple movies from search activity
-//need to rewrite DatabaseHandler
-//decide which content to include on main page and detail page
+//Want to be able to add multiple movies from search activity
+//Decide which content to include on main page and detail page
+
+//BUGS:
+//When sending searched item to main list, genres don't show up in main list for that movie until app is restarted
+//
 
 //Not necessary, but would like to have:
 //Have app remember user's sorting preference and add movies in that order
 //include letters/years/rating depending on how it's sorted (like an index)
-//maybe include tomato meter rating somewhere? - will need to update base url.
+//maybe include ratings on detail screen
 //////eventually include user custom rating, type of movie [physical (DVD/BluRay/VHS?) or Streaming(PC/Netflix/Hulu/Amazon/etc.)]
 public class MainActivity extends AppCompatActivity implements ItemClickListener{
 
@@ -62,10 +71,6 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     private String TAG = MainActivity.class.getSimpleName();
     private ProgressDialog pDialog;
     final CharSequence[] sortOptions = {"A-Z","Z-A","Year","Rating"};
-    /*final CharSequence[] sortOptions = {getString(R.string.action_sortAZ),
-            getString(R.string.action_sortZA),
-            getString(R.string.action_sortYear),
-            getString(R.string.action_sortRating)};*/
 
     public String url = "";
     Context context = this;
@@ -89,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         rv.setLayoutManager(rvLM);
 
         movies = db.getAllMovies();
-
+        Log.e(TAG,db.getTableAsString());
         mAdapter = new MovieAdapter(this, movies);
         rv.setAdapter(mAdapter);
         setUpItemTouchHelper();

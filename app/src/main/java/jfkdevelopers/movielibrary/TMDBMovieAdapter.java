@@ -72,9 +72,7 @@ public class TMDBMovieAdapter extends RecyclerView.Adapter<TMDBMovieAdapter.View
             holder.movieYear.setText(m.getRelease_date().substring(0, 4));
             holder.movieRating.setText("");
             holder.id=m.getId();
-            if (m.getGenre_ids().size() > 0) {
-                holder.movieGenre.setText(String.format("%s", m.getGenre_ids().get(0).toString())); //need to convert to genre string
-            }
+            holder.movieGenre.setText(m.getGenres());
             Picasso.with(holder.movieImage.getContext())
                     .load("https://image.tmdb.org/t/p/w500" + m.getPoster_path())
                     .placeholder(R.mipmap.ic_theaters_black_24dp)
