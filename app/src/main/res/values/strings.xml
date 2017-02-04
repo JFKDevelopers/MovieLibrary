@@ -1,15 +1,13 @@
 <resources>
-    <string name="app_name">Movies</string>
+    <string name="app_name">Movie Library</string>
+    <string name="title_activity_main">Movies</string>
     <string name="title_activity_detail"> </string>
+    <string name="title_activity_search">Search</string>
 
     <string name="MovieTitle">Add Movie</string>
     <string name="movie_image">Movie Image</string>
     <string name="YearListItem">"Year: "</string>
     <string name="action_sort">Sort</string>
-    <string name="action_sortAZ">A-Z</string>
-    <string name="action_sortZA">Z-A</string>
-    <string name="action_sortYear">Year</string>
-    <string name="action_sortRating">Rating</string>
 
     <string name="iconReferences">https://material.io/icons/, https://materialdesignicons.com/</string>
     <string name="delete_all">Delete All</string>
@@ -30,4 +28,10 @@
     <string name="searchDialogHint">Title</string>
     <string name="noInternetMessage">No internet connection</string>
     <string name="movie_backdrop">Movie Backdrop</string>
+    <string name="plot">Plot:</string>
+    <string name="genres">Genre(s):</string>
+    <string name="cast">Cast:</string>
+    <string name="noTitleError">Search title was blank</string>
+    <string name="runtime">Runtime:</string>
+    <string name="release_date">Released:</string>
 </resources>

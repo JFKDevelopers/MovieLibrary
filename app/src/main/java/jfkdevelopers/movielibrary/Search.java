@@ -74,7 +74,7 @@ public class Search extends AppCompatActivity {
             HttpHandler sh = new HttpHandler();
             // Making a request to url and getting response
             String jsonStr = sh.makeServiceCall(url);
-            Log.e(TAG, "Response from url: " + jsonStr);
+            //Log.e(TAG, "Response from url: " + jsonStr);
             if (jsonStr != null) {
                 try {
                     JSONObject jsonObj = new JSONObject(jsonStr);
@@ -86,7 +86,7 @@ public class Search extends AppCompatActivity {
                         if(m!=null){
                             searchResults.add(m);
                         }
-                        Log.e(TAG,temp.toString());
+                        //Log.e(TAG,temp.toString());
                     }
                 } catch (final Exception e) {
                     Log.e(TAG, "Json parsing error: " + e.getMessage());

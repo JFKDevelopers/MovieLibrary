@@ -48,7 +48,6 @@ public class TMDBMovieAdapter extends RecyclerView.Adapter<TMDBMovieAdapter.View
         }
         @Override
         public void onClick(View view){
-            Toast.makeText(context,movieTitle.getText()+" added",Toast.LENGTH_LONG).show();
             addBtn.setVisibility(View.INVISIBLE);
             if(context instanceof Search){
                 ((Search)context).sendToMain(id);

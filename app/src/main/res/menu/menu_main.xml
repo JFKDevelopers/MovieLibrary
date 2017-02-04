@@ -2,13 +2,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="jfkdevelopers.movielibrary.MainActivity">
-    <!--<item
+    <item
         android:id="@+id/search"
         android:orderInCategory="100"
         android:title="@string/search"
         android:icon="@drawable/magnify"
         app:showAsAction="collapseActionView|ifRoom"
-        android:actionViewClass="android.widget.SearchView" />-->
+        android:actionViewClass="android.widget.SearchView" />
     <item
         android:id="@+id/action_sort"
         android:orderInCategory="200"

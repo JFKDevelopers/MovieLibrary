@@ -1,8 +1,5 @@
 package jfkdevelopers.movielibrary;
 
-import android.util.Log;
-import android.util.SparseArray;
-
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -16,14 +13,10 @@ public class Movie implements Serializable{
     public String backdropPath;
     @SerializedName("belongs_to_collection")
     public BelongsToCollection belongsToCollection;
-    @SerializedName("belongs_to_collection_string")
-    public String belongsToCollectionString;
     @SerializedName("budget")
-    public int budget;
+    public long budget;
     @SerializedName("genres")
     public List<Genres> genres;
-    @SerializedName("genres_string")
-    public String genreString;
     @SerializedName("homepage")
     public String homepage;
     @SerializedName("id")
@@ -42,22 +35,16 @@ public class Movie implements Serializable{
     public String posterPath;
     @SerializedName("production_companies")
     public List<ProductionCompanies> productionCompanies;
-    @SerializedName("production_companies_string")
-    public String productionCompaniesString;
     @SerializedName("production_countries")
     public List<ProductionCountries> productionCountries;
-    @SerializedName("production_countries_string")
-    public String productionCountriesString;
     @SerializedName("release_date")
     public String releaseDate;
     @SerializedName("revenue")
-    public int revenue;
+    public long revenue;
     @SerializedName("runtime")
     public int runtime;
     @SerializedName("spoken_languages")
     public List<SpokenLanguages> spokenLanguages;
-    @SerializedName("spoken_languages_string")
-    public String spokenLanguagesString;
     @SerializedName("status")
     public String status;
     @SerializedName("tagline")
@@ -70,20 +57,20 @@ public class Movie implements Serializable{
     public double voteAverage;
     @SerializedName("vote_count")
     public int voteCount;
+    @SerializedName("credits")
+    public Credits credits;
 
     public Movie(boolean adult, String backdropPath, BelongsToCollection belongsToCollection, int budget,
                  List<Genres> genres, String homepage, int id, String imdbId, String originalLanguage,
                  String originalTitle, String overview, double popularity, String posterPath,
                  List<ProductionCompanies> productionCompanies, List<ProductionCountries> productionCountries,
                  String releaseDate, int revenue, int runtime, List<SpokenLanguages> spokenLanguages,
-                 String status, String tagline, String title, boolean video, double voteAverage, int voteCount) {
+                 String status, String tagline, String title, boolean video, double voteAverage, int voteCount, Credits credits) {
         this.adult = adult;
         this.backdropPath = backdropPath;
         this.belongsToCollection = belongsToCollection;
-        this.belongsToCollectionString = getBelongsToCollection();
         this.budget = budget;
         this.genres = genres;
-        this.genreString = getGenres();
         this.homepage = homepage;
         this.id = id;
         this.imdbId = imdbId;
@@ -93,53 +80,18 @@ public class Movie implements Serializable{
         this.popularity = popularity;
         this.posterPath = posterPath;
         this.productionCompanies = productionCompanies;
-        this.productionCompaniesString = getProductionCompanies();
         this.productionCountries = productionCountries;
-        this.productionCountriesString = getProductionCountries();
         this.releaseDate = releaseDate;
         this.revenue = revenue;
         this.runtime = runtime;
         this.spokenLanguages = spokenLanguages;
-        this.spokenLanguagesString = getSpokenLanguages();
         this.status = status;
         this.tagline = tagline;
         this.title = title;
         this.video = video;
         this.voteAverage = voteAverage;
         this.voteCount = voteCount;
-    }
-
-    public Movie(int id, boolean adult, String backdropPath, String belongsToCollection, int budget,
-                 String genres, String homepage, String imdbId, String originalLanguage,
-                 String originalTitle, String overview, double popularity, String posterPath,
-                 String productionCompanies, String productionCountries,
-                 String releaseDate, int revenue, int runtime, String spokenLanguages,
-                 String status, String tagline, String title, boolean video, double voteAverage, int voteCount) {
-        this.adult = adult;
-        this.backdropPath = backdropPath;
-        this.belongsToCollectionString = belongsToCollection;
-        this.budget = budget;
-        this.genreString = genres;
-        this.homepage = homepage;
-        this.id = id;
-        this.imdbId = imdbId;
-        this.originalLanguage = originalLanguage;
-        this.originalTitle = originalTitle;
-        this.overview = overview;
-        this.popularity = popularity;
-        this.posterPath = posterPath;
-        this.productionCompaniesString = productionCompanies;
-        this.productionCountriesString = productionCountries;
-        this.releaseDate = releaseDate;
-        this.revenue = revenue;
-        this.runtime = runtime;
-        this.spokenLanguagesString = spokenLanguages;
-        this.status = status;
-        this.tagline = tagline;
-        this.title = title;
-        this.video = video;
-        this.voteAverage = voteAverage;
-        this.voteCount = voteCount;
+        this.credits = credits;
     }
 
     public boolean isAdult() {
@@ -158,17 +110,15 @@ public class Movie implements Serializable{
         this.backdropPath = backdropPath;
     }
 
-    public String getBelongsToCollection() {
-            if (belongsToCollection != null) {
-                return this.belongsToCollection.name;
-            } else return "";
+    public BelongsToCollection getBelongsToCollection() {
+            return belongsToCollection;
     }
 
     public void setBelongsToCollection(BelongsToCollection belongsToCollection) {
         this.belongsToCollection = belongsToCollection;
     }
 
-    public int getBudget() {
+    public long getBudget() {
         return budget;
     }
 
@@ -176,34 +126,8 @@ public class Movie implements Serializable{
         this.budget = budget;
     }
 
-    public String getGenres() {
-            if (genres != null && genres.size()>0) {
-                SparseArray<String> genreMap = new SparseArray<>();
-                genreMap.put(28, "Action");
-                genreMap.put(12, "Adventure");
-                genreMap.put(16, "Animation");
-                genreMap.put(35, "Comedy");
-                genreMap.put(80, "Crime");
-                genreMap.put(99, "Documentary");
-                genreMap.put(18, "Drama");
-                genreMap.put(10751, "Family");
-                genreMap.put(14, "Fantasy");
-                genreMap.put(36, "History");
-                genreMap.put(27, "Horror");
-                genreMap.put(10402, "Music");
-                genreMap.put(9648, "Mystery");
-                genreMap.put(10749, "Romance");
-                genreMap.put(878, "Science Fiction");
-                genreMap.put(10770, "TV Movie");
-                genreMap.put(53, "Thriller");
-                genreMap.put(10752, "War");
-                genreMap.put(37, "Western");
-                String out = "";
-                for (Genres g : genres) {
-                    out = out + genreMap.get(g.id) + ", ";
-                }
-                return out.substring(0, out.length() - 2);
-            } else return "";
+    public List<Genres> getGenres() {
+            return genres;
     }
 
     public void setGenreList(List<Genres> genres) {
@@ -274,28 +198,16 @@ public class Movie implements Serializable{
         this.posterPath = posterPath;
     }
 
-    public String getProductionCompanies() {
-            if (productionCompanies != null && productionCompanies.size()>0) {
-                String out = "";
-                for (ProductionCompanies p : this.productionCompanies) {
-                    out = out + p.name + ", ";
-                }
-                return out.substring(0, out.length() - 2);
-            } else return "";
+    public List<ProductionCompanies> getProductionCompanies() {
+        return productionCompanies;
     }
 
     public void setProductionCompanies(List<ProductionCompanies> productionCompanies) {
         this.productionCompanies = productionCompanies;
     }
 
-    public String getProductionCountries() {
-            if (productionCountries != null && productionCountries.size()>0) {
-                String out = "";
-                for (ProductionCountries p : this.productionCountries) {
-                    out = out + p.name + ", ";
-                }
-                return out.substring(0, out.length() - 2);
-            } else return "";
+    public List<ProductionCountries> getProductionCountries() {
+            return productionCountries;
     }
 
     public void setProductionCountries(List<ProductionCountries> productionCountries) {
@@ -310,7 +222,7 @@ public class Movie implements Serializable{
         this.releaseDate = releaseDate;
     }
 
-    public int getRevenue() {
+    public long getRevenue() {
         return revenue;
     }
 
@@ -326,14 +238,8 @@ public class Movie implements Serializable{
         this.runtime = runtime;
     }
 
-    public String getSpokenLanguages() {
-            if (spokenLanguages != null && spokenLanguages.size()>0) {
-                String out = "";
-                for (SpokenLanguages s : this.spokenLanguages) {
-                    out = out + s.name + ", ";
-                }
-                return out.substring(0, out.length() - 2);
-            } else return "";
+    public List<SpokenLanguages> getSpokenLanguages() {
+            return spokenLanguages;
     }
 
     public void setSpokenLanguages(List<SpokenLanguages> spokenLanguages) {
@@ -386,6 +292,14 @@ public class Movie implements Serializable{
 
     public void setVoteCount(int voteCount) {
         this.voteCount = voteCount;
+    }
+
+    public List<Cast> getCast() {
+        return credits.getCast();
+    }
+
+    public List<Crew> getCrew(){
+        return credits.getCrew();
     }
 
     @Override
@@ -456,6 +370,53 @@ public class Movie implements Serializable{
         public String iso6391;
         @SerializedName("name")
         public String name;
+    }
+
+    public static class Cast implements Serializable{
+        @SerializedName("cast_id")
+        public int cast_id;
+        @SerializedName("character")
+        public String character;
+        @SerializedName("credit_id")
+        public String credit_id;
+        @SerializedName("id")
+        public int id;
+        @SerializedName("name")
+        public String name;
+        @SerializedName("order")
+        public int order;
+        @SerializedName("profile_path")
+        public String profile_path;
+    }
+
+    public static class Crew implements Serializable{
+        @SerializedName("credit_id")
+        public String credit_id;
+        @SerializedName("department")
+        public String department;
+        @SerializedName("id")
+        public int id;
+        @SerializedName("job")
+        public String job;
+        @SerializedName("name")
+        public String name;
+        @SerializedName("profile_path")
+        public String profile_path;
+    }
+
+    public static class Credits implements Serializable{
+        @SerializedName("cast")
+        public List<Cast> cast;
+        @SerializedName("crew")
+        public List<Crew> crew;
+
+        public List<Cast> getCast() {
+            return cast;
+        }
+
+        public List<Crew> getCrew() {
+            return crew;
+        }
     }
 }
 

@@ -46,18 +46,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
-//STORE JSON TEXT IN DB INSTEAD OF ALL ELEMENTS OF MOVIE...DUH.
-////this should also reduce size of data stored on device.
-////however need to make sure there are no string size limitations to what is stored in the DB per item
-
-//&append_to_response=credits //this will give cast and crew from the movie appended to the response.
+//use an increasing index for the db to make it easier to sort items ??
 
 //Pre-testing:
 //Want to be able to add multiple movies from search activity
 //Decide which content to include on main page and detail page
+//Allow movie poster error image to fill the normal space of a movie poster
 
 //BUGS:
-//When sending searched item to main list, genres don't show up in main list for that movie until app is restarted
 //
 
 //Not necessary, but would like to have:
@@ -70,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     public final static String EXTRA_MESSAGE = "com.jfkdevelopers.movielibrary.MESSAGE";
     private String TAG = MainActivity.class.getSimpleName();
     private ProgressDialog pDialog;
-    final CharSequence[] sortOptions = {"A-Z","Z-A","Year","Rating"};
+    final CharSequence[] sortOptions = {"A-Z","Z-A","Year"};
 
     public String url = "";
     Context context = this;
@@ -94,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         rv.setLayoutManager(rvLM);
 
         movies = db.getAllMovies();
-        Log.e(TAG,db.getTableAsString());
+        //Log.e(TAG,db.getTableAsString());
         mAdapter = new MovieAdapter(this, movies);
         rv.setAdapter(mAdapter);
         setUpItemTouchHelper();
@@ -112,15 +108,20 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
                 dialog.setView(input);
                 dialog.setPositiveButton(R.string.search_button,new DialogInterface.OnClickListener(){
                     @Override
-                    public void onClick(DialogInterface di, int item){
-                        if(connectedToNetwork()) {
-                            Intent intent = new Intent(context, Search.class);
-                            String message = input.getText().toString();
-                            intent.putExtra(EXTRA_MESSAGE, message);
-                            startActivityForResult(intent, 1);
+                    public void onClick(DialogInterface di, int item) {
+                        String message = input.getText().toString().trim();
+                        if (message.length() >= 1){
+                            if (connectedToNetwork()) {
+                                Intent intent = new Intent(context, Search.class);
+                                intent.putExtra(EXTRA_MESSAGE, message);
+                                startActivityForResult(intent, 1);
+                            } else Toast.makeText(getApplicationContext(),
+                                    R.string.noInternetMessage,
+                                    Toast.LENGTH_LONG)
+                                    .show();
                         }
                         else Toast.makeText(getApplicationContext(),
-                                R.string.noInternetMessage,
+                                R.string.noTitleError,
                                 Toast.LENGTH_LONG)
                                 .show();
                     }
@@ -142,8 +143,11 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         if(requestCode==1){
             if(resultCode == RESULT_OK){
                 int id = data.getIntExtra("movieId",0);
-                url="https://api.themoviedb.org/3/movie/"+id+"?api_key=13de0f310da7852b09b07e6a9f3a16ae";
-                new GetMovie().execute();
+                if(!db.movieInTable(id)) {
+                    url = "https://api.themoviedb.org/3/movie/" + id + "?api_key=13de0f310da7852b09b07e6a9f3a16ae&append_to_response=credits";
+                    new GetMovie().execute();
+                }
+                else Toast.makeText(context,"Movie already exists in list",Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -212,15 +216,17 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
                             });
                             break;
                         case 2: //Sort by year
-                           /* Collections.sort(movies,new Comparator<Movie>(){
+                            Collections.sort(movies,new Comparator<Movie>(){
                                 @Override
                                 public int compare(Movie m1, Movie m2){
-                                    if(!m1.getYear().equals(m2.getYear())) return m1.getYear().compareTo(m2.getYear());
-                                    return m1.getTitle().compareTo(m2.getTitle());
+                                    String y1 = m1.getReleaseDate().substring(0,4);
+                                    String y2 = m2.getReleaseDate().substring(0,4);
+                                    if(!y1.equals(y2)) return y1.compareTo(y2);
+                                    return y1.compareTo(y2);
                                 }
-                            });*/
+                            });
                             break;
-                        case 3: //Sort by rating
+                            //Sort by rating
                             /*Collections.sort(movies,new Comparator<Movie>(){
                                 @Override
                                 public int compare(Movie m1, Movie m2){
@@ -229,15 +235,10 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
                                     return m1.getYear().compareTo(m2.getYear());
                                 }
                             });*/
-                            break;
                         default:
                             break;
                     }
                     dialog.dismiss();
-                    db.deleteAllMovies();
-                    for(Movie m:movies){
-                        db.addMovie(m);
-                    }
                     mAdapter.notifyDataSetChanged();
                 }
             });
@@ -435,13 +436,14 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         protected Void doInBackground(Void... arg0) {
             HttpHandler sh = new HttpHandler();
             // Making a request to url and getting response
+            Log.e(TAG,url);
             String jsonStr = sh.makeServiceCall(url);
-            Log.e(TAG, "Response from url: " + jsonStr);
+            //Log.e(TAG, "Response from url: " + jsonStr);
             if (jsonStr != null) {
                 try {
                         Gson gson = new Gson();
                         Movie m = gson.fromJson(jsonStr,Movie.class);
-                        db.addMovie(m);
+                        db.addMovie(m.getId(),jsonStr);
                         movies.add(m);
                 } catch (final Exception e) {
                     Log.e(TAG, "Json parsing error: " + e.getMessage());

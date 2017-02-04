@@ -1,83 +1,205 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView android:layout_height="match_parent"
+<android.support.v4.widget.NestedScrollView
+    android:layout_height="match_parent"
     android:layout_width="match_parent"
     tools:context=".DetailActivity"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="@layout/activity_detail"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
-<LinearLayout
-    android:id="@+id/content_detail"
-    android:layout_height="wrap_content"
-    android:layout_width="match_parent"
-    android:orientation="vertical">
-    <FrameLayout
-        android:id="@+id/backdrop_frame"
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    <LinearLayout
+        android:id="@+id/content_detail"
         android:layout_height="wrap_content"
-        android:layout_width="fill_parent">
-        <ImageView
-            android:id="@+id/backdrop"
-            android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView android:id="@+id/movie_poster"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:contentDescription="@string/movie_poster"
+                android:padding="8dp"/>
+            <TextView
+                android:id="@+id/movie_title"
+                android:textColor="@color/textColorPrimary"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:textAppearance="@android:style/TextAppearance.Large"
+                android:gravity="start"
+                android:layout_toRightOf="@+id/movie_poster"
+                android:layout_toEndOf="@+id/movie_poster" />
+            <TextView
+                android:id="@+id/movie_tagline"
+                android:textColor="@color/textColorPrimary"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                android:padding="8dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/movie_poster"
+                android:layout_toEndOf="@+id/movie_poster"
+                android:layout_below="@+id/movie_title"/>
+        </RelativeLayout>
+        <android.support.v7.widget.CardView
+            xmlns:card_view="http://schemas.android.com/apk/res-auto"
             android:layout_width="fill_parent"
-            android:scaleType="fitStart"
-            android:adjustViewBounds="true"
-            android:contentDescription="@string/movie_backdrop"/>
-        <ImageView
-            android:id="@+id/movie_poster"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:contentDescription="@string/movie_poster"
-            android:paddingTop="100dp"
-            android:paddingStart="8dp"
-            android:paddingLeft="8dp"
-            android:paddingEnd="8dp"
-            android:paddingRight="8dp"/>
-        </FrameLayout>
-    <TextView
-        android:id="@+id/movie_title"
-        android:textColor="@color/textColorPrimary"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:textAppearance="@android:style/TextAppearance.Large"
-        android:gravity="start" />
-    <TextView
-        android:id="@+id/movie_tagline"
-        android:textColor="@color/textColorPrimary"
-        android:textAppearance="@android:style/TextAppearance.Medium"
-        android:padding="8dp"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-    <TextView
-        android:id="@+id/movie_overview"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="@android:style/TextAppearance.Medium"
-        android:textColor="@color/textColorPrimary"
-        android:padding="8dp" />
-    <TextView
-        android:id="@+id/movie_genres"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="@android:style/TextAppearance.Medium"
-        android:textColor="@color/textColorPrimary"
-        android:padding="8dp" />
-    <TextView
-        android:id="@+id/movie_runtime"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="@android:style/TextAppearance.Medium"
-        android:textColor="@color/textColorPrimary"
-        android:padding="8dp" />
-    <TextView
-        android:id="@+id/movie_releaseDate"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="@android:style/TextAppearance.Medium"
-        android:textColor="@color/textColorPrimary"
-        android:padding="8dp" />
-</LinearLayout>
-</ScrollView>
+            android:layout_height="wrap_content"
+            card_view:cardElevation="4dp"
+            card_view:cardCornerRadius="4dp"
+            card_view:cardBackgroundColor="@color/cardViewBG"
+            android:padding="8dp"
+            app:cardUseCompatPadding="true">
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/runtime"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textStyle="bold"
+                    android:padding="8dp"/>
+                <TextView
+                    android:id="@+id/movie_runtime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textColor="@color/textColorPrimary"
+                    android:padding="8dp" />
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            card_view:cardElevation="4dp"
+            card_view:cardCornerRadius="4dp"
+            card_view:cardBackgroundColor="@color/cardViewBG"
+            android:padding="8dp"
+            app:cardUseCompatPadding="true">
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/release_date"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textStyle="bold"
+                    android:padding="8dp"/>
+                <TextView
+                    android:id="@+id/movie_releaseDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textColor="@color/textColorPrimary"
+                    android:padding="8dp" />
+        </LinearLayout>
+        </android.support.v7.widget.CardView>
+        <android.support.v7.widget.CardView
+            xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            card_view:cardElevation="4dp"
+            card_view:cardCornerRadius="4dp"
+            card_view:cardBackgroundColor="@color/cardViewBG"
+            android:padding="8dp"
+            app:cardUseCompatPadding="true">
+            <!-- app:cardUseCompatPadding is necessary for padding between cards -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/plot"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textColor="@color/textColorPrimary"
+                    android:textStyle="bold"
+                    android:paddingLeft="8dp"
+                    android:paddingStart="8dp"
+                    android:paddingRight="8dp"
+                    android:paddingEnd="8dp"/>
+                <TextView
+                    android:id="@+id/movie_overview"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textColor="@color/textColorPrimary"
+                    android:paddingLeft="16dp"
+                    android:paddingStart="16dp"
+                    android:paddingRight="0dp"
+                    android:paddingEnd="0dp"/>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            card_view:cardElevation="4dp"
+            card_view:cardCornerRadius="4dp"
+            card_view:cardBackgroundColor="@color/cardViewBG"
+            card_view:contentPadding="8dp"
+            app:cardUseCompatPadding="true">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/genres"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textStyle="bold"
+                    android:paddingBottom="4dp"/>
+                <TextView
+                    android:id="@+id/movie_genres"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textColor="@color/textColorPrimary"
+                    android:padding="8dp" />
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            card_view:cardElevation="4dp"
+            card_view:cardCornerRadius="4dp"
+            card_view:cardBackgroundColor="@color/cardViewBG"
+            card_view:contentPadding="8dp"
+            app:cardUseCompatPadding="true">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cast"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textStyle="bold"
+                    android:paddingBottom="4dp"/>
+                <TextView
+                    android:id="@+id/movie_cast"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textColor="@color/textColorPrimary"
+                    android:paddingLeft="8dp"
+                    android:paddingStart="8dp"
+                    android:paddingRight="8dp"
+                    android:paddingEnd="8dp"/>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>
