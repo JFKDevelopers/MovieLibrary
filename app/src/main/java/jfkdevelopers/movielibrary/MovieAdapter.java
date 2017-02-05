@@ -2,35 +2,23 @@ package jfkdevelopers.movielibrary;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.net.Uri;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import static com.google.gson.internal.bind.TypeAdapters.URL;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
     public final static String SER_KEY = "com.jfkdevelopers.MovieLibrary.ser";

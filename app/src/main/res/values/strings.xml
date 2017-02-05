@@ -35,4 +35,10 @@
     <string name="runtime">Runtime:</string>
     <string name="release_date">Released:</string>
     <string name="add_to_list">Add to List</string>
+    <string name="title_activity_nav_drawer">NavDrawerActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 </resources>

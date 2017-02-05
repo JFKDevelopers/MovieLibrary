@@ -1,8 +1,5 @@
 package jfkdevelopers.movielibrary;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -342,35 +339,34 @@ public class Movie implements Serializable{
         ProductionCountries p2 = new ProductionCountries();
         SpokenLanguages s = new SpokenLanguages();
 
-        String belongsToCollectionStr = belongsToCollection!=null?this.belongsToCollection.toString():"null";
-        String genreStr = genres != null? g.toString(genres):"null";
-        String prodCoStr = productionCompanies !=null ?  p1.toString(this.productionCompanies):"null";
-        String prodCnStr = productionCountries !=null ?  p2.toString(this.productionCountries):"null";
-        String spokenLngStr = spokenLanguages !=null ? s.toString(spokenLanguages):"null";
-        String creditStr = credits !=null ? this.credits.toString():"null";
-
+        String belongsToCollectionStr = this.belongsToCollection!=null?this.belongsToCollection.toString():"null";
+        String genreStr = this.genres != null? g.toString(this.genres):"null";
+        String prodCoStr = this.productionCompanies !=null ?  p1.toString(this.productionCompanies):"null";
+        String prodCnStr = this.productionCountries !=null ?  p2.toString(this.productionCountries):"null";
+        String spokenLngStr = this.spokenLanguages !=null ? s.toString(this.spokenLanguages):"null";
+        String creditStr = this.credits !=null ? this.credits.toString():"null";
         String out = "{\"adult\":"+this.adult+","+
-                "\"backdrop_path\":\""+this.backdropPath+"\","+
+                "\"backdrop_path\":\""+this.backdropPath.replace("\"","\\\"")+"\","+
                 "\"belongs_to_collection\":"+belongsToCollectionStr+","+
                 "\"budget\":"+this.budget+","+
                 "\"genres\":"+genreStr+","+
-                "\"homepage\":\""+this.homepage+"\","+
+                "\"homepage\":\""+this.homepage.replace("\"","\\\"")+"\","+
                 "\"id\":"+this.id+","+
                 "\"imdb_id\":\""+this.imdbId+"\","+
-                "\"original_language\":\""+this.originalLanguage+"\","+
-                "\"original_title\":\""+this.originalTitle+"\","+
-                "\"overview\":\""+this.overview+"\","+
+                "\"original_language\":\""+this.originalLanguage.replace("\"","\\\"")+"\","+
+                "\"original_title\":\""+this.originalTitle.replace("\"","\\\"")+"\","+
+                "\"overview\":\""+this.overview.replace("\"","\\\"")+"\","+
                 "\"popularity\":"+this.popularity+","+
-                "\"poster_path\":\""+this.posterPath+"\","+
+                "\"poster_path\":\""+this.posterPath.replace("\"","\\\"")+"\","+
                 "\"production_companies\":"+prodCoStr+","+
                 "\"production_countries\":"+prodCnStr+","+
-                "\"release_date\":\""+this.releaseDate+"\","+
+                "\"release_date\":\""+this.releaseDate.replace("\"","\\\"")+"\","+
                 "\"revenue\":"+this.revenue+","+
                 "\"runtime\":"+this.runtime+","+
                 "\"spoken_languages\":"+spokenLngStr+","+
-                "\"status\":\""+this.status+"\","+
-                "\"tagline\":\""+this.tagline+"\","+
-                "\"title\":\""+this.title+"\","+
+                "\"status\":\""+this.status.replace("\"","\\\"")+"\","+
+                "\"tagline\":\""+this.tagline.replace("\"","\\\"")+"\","+
+                "\"title\":\""+this.title.replace("\"","\\\"")+"\","+
                 "\"video\":"+this.video+","+
                 "\"vote_average\":"+this.voteAverage+","+
                 "\"vote_count\":"+this.voteCount+","+

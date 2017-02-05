@@ -122,6 +122,7 @@
                     android:textAppearance="@android:style/TextAppearance.Medium"
                     android:textColor="@color/textColorPrimary"
                     android:textStyle="bold"
+                    android:paddingTop="8dp"
                     android:paddingLeft="8dp"
                     android:paddingStart="8dp"
                     android:paddingRight="8dp"
@@ -130,12 +131,13 @@
                     android:id="@+id/movie_overview"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textSize="16sp"
                     android:textColor="@color/textColorPrimary"
                     android:paddingLeft="16dp"
                     android:paddingStart="16dp"
                     android:paddingRight="0dp"
-                    android:paddingEnd="0dp"/>
+                    android:paddingEnd="0dp"
+                    android:paddingBottom="8dp"/>
             </LinearLayout>
         </android.support.v7.widget.CardView>
 
@@ -146,11 +148,11 @@
             card_view:cardElevation="4dp"
             card_view:cardCornerRadius="4dp"
             card_view:cardBackgroundColor="@color/cardViewBG"
-            card_view:contentPadding="8dp"
+            android:padding="8dp"
             app:cardUseCompatPadding="true">
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <TextView
                     android:layout_width="wrap_content"
@@ -158,7 +160,7 @@
                     android:text="@string/genres"
                     android:textAppearance="@android:style/TextAppearance.Medium"
                     android:textStyle="bold"
-                    android:paddingBottom="4dp"/>
+                    android:padding="8dp"/>
                 <TextView
                     android:id="@+id/movie_genres"
                     android:layout_width="wrap_content"
@@ -193,8 +195,8 @@
                     android:id="@+id/movie_cast"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@android:style/TextAppearance.Medium"
                     android:textColor="@color/textColorPrimary"
+                    android:textSize="16sp"
                     android:paddingLeft="8dp"
                     android:paddingStart="8dp"
                     android:paddingRight="8dp"

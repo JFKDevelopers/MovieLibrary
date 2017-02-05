@@ -1,7 +1,6 @@
 package jfkdevelopers.movielibrary;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,18 +13,24 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,7 +52,7 @@ import java.util.List;
 //include letters/years/rating depending on how it's sorted (like an index)
 //maybe include ratings on detail screen
 //////eventually include user custom rating, type of movie [physical (DVD/BluRay/VHS?) or Streaming(PC/Netflix/Hulu/Amazon/etc.)]
-public class MainActivity extends AppCompatActivity implements ItemClickListener{
+public class MainActivity extends AppCompatActivity implements ItemClickListener, NavigationView.OnNavigationItemSelectedListener{
 
     public final static String EXTRA_MESSAGE = "com.jfkdevelopers.movielibrary.MESSAGE";
     private String TAG = MainActivity.class.getSimpleName();
@@ -63,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -117,8 +123,51 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
                 searchDialog.show();
             }
         });
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this,drawer,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_camera) {
+            // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
+
+        } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode,resultCode,data);
         int count = 0;
@@ -129,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
                     if(!db.movieInTable(m.getId())) {
                         movies.add(m);
                         db.addMovie(m.getId(), m.toJSONString());
+                        Log.e(TAG,m.getId()+" "+m.toJSONString());
                         count++;
                     }
                 }

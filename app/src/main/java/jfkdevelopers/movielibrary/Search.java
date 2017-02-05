@@ -3,14 +3,15 @@ package jfkdevelopers.movielibrary;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -51,7 +52,6 @@ public class Search extends AppCompatActivity {
         url = urlStart + searchTitle.replace(" ", "+");
 
         new SearchMovies().execute();
-        //mAdapter = new TMDBMovieAdapter(this,searchResults);
         moAdapter = new MovieAdapter(this,detailedSearchResults);
         rv.setAdapter(moAdapter);
     }
@@ -112,7 +112,6 @@ public class Search extends AppCompatActivity {
                         url = "https://api.themoviedb.org/3/movie/" + temp.get("id") + "?api_key=13de0f310da7852b09b07e6a9f3a16ae&append_to_response=credits";
                         String movieStr = sh.makeServiceCall(url);
                         Gson gson = new Gson();
-                        //TMDBMovie m = gson.fromJson(temp.toString(),TMDBMovie.class);
                         Movie m = gson.fromJson(movieStr,Movie.class);
                         if(m!=null){
                             //searchResults.add(m);
