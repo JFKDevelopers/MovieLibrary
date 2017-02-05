@@ -50,7 +50,7 @@ public class TMDBMovieAdapter extends RecyclerView.Adapter<TMDBMovieAdapter.View
         public void onClick(View view){
             addBtn.setVisibility(View.INVISIBLE);
             if(context instanceof Search){
-                ((Search)context).sendToMain(id);
+                //((Search)context).sendToMain(id);
             }
         }
     }

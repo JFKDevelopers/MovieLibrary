@@ -33,7 +33,6 @@ import java.util.List;
 import static com.google.gson.internal.bind.TypeAdapters.URL;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
-    //public final static String EXTRA_MESSAGE = "com.jfkdevelopers.movielibrary.MESSAGE";
     public final static String SER_KEY = "com.jfkdevelopers.MovieLibrary.ser";
     private static final int PENDING_REMOVAL_TIMEOUT = 3000; //3 sec
     private List<Movie> movies;
@@ -62,23 +61,39 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
         public TextView movieYear;
         public TextView movieRating;
         public TextView movieGenre;
+        public ImageButton addBtn;
         public int id = -1;
         public ViewHolder(View v){
             super(v);
-            v.setOnClickListener(this);
             movieImage = (ImageView) v.findViewById(R.id.cover);
+            movieImage.setOnClickListener(this);
             movieTitle = (TextView) v.findViewById(R.id.title);
             movieYear = (TextView) v.findViewById(R.id.year);
             movieRating = (TextView) v.findViewById(R.id.rating);
             movieGenre = (TextView) v.findViewById(R.id.genre);
+            addBtn = (ImageButton) v.findViewById(R.id.addButton);
+            if(context instanceof Search) addBtn.setVisibility(View.VISIBLE);
+            else addBtn.setVisibility(View.INVISIBLE);
+            addBtn.setOnClickListener(this);
         }
         @Override
         public void onClick(View view){
-            Intent intent = new Intent(context,DetailActivity.class);
-            Bundle mBundle = new Bundle();
-            mBundle.putSerializable(SER_KEY,movieMap.get(id));
-            intent.putExtras(mBundle);
-            context.startActivity(intent);
+            //Integer position = (Integer) view.getTag();
+            switch(view.getId()) {
+                case R.id.cover:
+                    Intent intent = new Intent(context, DetailActivity.class);
+                    Bundle mBundle = new Bundle();
+                    mBundle.putSerializable(SER_KEY, movieMap.get(id));
+                    intent.putExtras(mBundle);
+                    context.startActivity(intent);
+                    break;
+                case R.id.addButton:
+                    if(context instanceof Search){
+                        addBtn.setVisibility(View.INVISIBLE);
+                        ((Search)context).addToSelected(movieMap.get(id));
+                    }
+                    break;
+            }
         }
     }
 
@@ -101,6 +116,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
             holder.movieRating.setVisibility(View.GONE);
             holder.movieYear.setVisibility(View.GONE);
             holder.movieGenre.setVisibility(View.GONE);
+            holder.addBtn.setVisibility(View.GONE);
         }
         else {
             try {

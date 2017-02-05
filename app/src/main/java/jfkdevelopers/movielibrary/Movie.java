@@ -1,5 +1,8 @@
 package jfkdevelopers.movielibrary;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -333,6 +336,49 @@ public class Movie implements Serializable{
                 '}';
     }
 
+    public String toJSONString(){
+        Genres g = new Genres();
+        ProductionCompanies p1 = new ProductionCompanies();
+        ProductionCountries p2 = new ProductionCountries();
+        SpokenLanguages s = new SpokenLanguages();
+
+        String belongsToCollectionStr = belongsToCollection!=null?this.belongsToCollection.toString():"null";
+        String genreStr = genres != null? g.toString(genres):"null";
+        String prodCoStr = productionCompanies !=null ?  p1.toString(this.productionCompanies):"null";
+        String prodCnStr = productionCountries !=null ?  p2.toString(this.productionCountries):"null";
+        String spokenLngStr = spokenLanguages !=null ? s.toString(spokenLanguages):"null";
+        String creditStr = credits !=null ? this.credits.toString():"null";
+
+        String out = "{\"adult\":"+this.adult+","+
+                "\"backdrop_path\":\""+this.backdropPath+"\","+
+                "\"belongs_to_collection\":"+belongsToCollectionStr+","+
+                "\"budget\":"+this.budget+","+
+                "\"genres\":"+genreStr+","+
+                "\"homepage\":\""+this.homepage+"\","+
+                "\"id\":"+this.id+","+
+                "\"imdb_id\":\""+this.imdbId+"\","+
+                "\"original_language\":\""+this.originalLanguage+"\","+
+                "\"original_title\":\""+this.originalTitle+"\","+
+                "\"overview\":\""+this.overview+"\","+
+                "\"popularity\":"+this.popularity+","+
+                "\"poster_path\":\""+this.posterPath+"\","+
+                "\"production_companies\":"+prodCoStr+","+
+                "\"production_countries\":"+prodCnStr+","+
+                "\"release_date\":\""+this.releaseDate+"\","+
+                "\"revenue\":"+this.revenue+","+
+                "\"runtime\":"+this.runtime+","+
+                "\"spoken_languages\":"+spokenLngStr+","+
+                "\"status\":\""+this.status+"\","+
+                "\"tagline\":\""+this.tagline+"\","+
+                "\"title\":\""+this.title+"\","+
+                "\"video\":"+this.video+","+
+                "\"vote_average\":"+this.voteAverage+","+
+                "\"vote_count\":"+this.voteCount+","+
+                "\"credits\":"+creditStr+"}";
+        out = out.replace("\"null\"","null");
+        return out;
+    }
+
     public static class BelongsToCollection implements Serializable{
         @SerializedName("id")
         public int id;
@@ -342,6 +388,13 @@ public class Movie implements Serializable{
         public String posterPath;
         @SerializedName("backdrop_path")
         public String backdropPath;
+        @Override
+        public String toString(){
+            return "{"+"\"id\":"+this.id+","+
+                    "\"name\":\""+this.name+"\","+
+                    "\"poster_path\":\""+this.posterPath+"\","+
+                    "\"backdrop_path\":\""+this.backdropPath+"\"}";
+        }
     }
 
     public static class Genres implements Serializable{
@@ -349,6 +402,17 @@ public class Movie implements Serializable{
         public int id;
         @SerializedName("name")
         public String name;
+
+        public String toString(List<Genres> genres){
+            String out = "[";
+            for(Genres g:genres){
+                out = out + "{\"id\":"+g.id+","+
+                            "\"name\":\""+g.name+"\"},";
+            }
+            if(genres.size()>0) return out.substring(0,out.length()-1) + "]";
+            else return out + "]";
+        }
+
     }
 
     public static class ProductionCompanies implements Serializable{
@@ -356,6 +420,16 @@ public class Movie implements Serializable{
         public String name;
         @SerializedName("id")
         public int id;
+
+        public String toString(List<ProductionCompanies> pcs){
+            String out = "[";
+            for(ProductionCompanies p:pcs){
+                out = out + "{\"name\":\""+p.name+"\","+
+                        "\"id\":"+p.id+"},";
+            }
+            if (pcs.size()>0) return out.substring(0,out.length()-1) + "]";
+            else return out + "]";
+        }
     }
 
     public static class ProductionCountries implements Serializable{
@@ -363,6 +437,16 @@ public class Movie implements Serializable{
         public String iso31661;
         @SerializedName("name")
         public String name;
+
+        public String toString(List<ProductionCountries> pcs){
+            String out = "[";
+            for(ProductionCountries p:pcs){
+                out = out + "{\"iso_3166_1\":\""+p.iso31661+"\","+
+                        "\"name\":\""+p.name+"\"},";
+            }
+            if (pcs.size()>0) return out.substring(0,out.length()-1) + "]";
+            else return out + "]";
+        }
     }
 
     public static class SpokenLanguages implements Serializable{
@@ -370,6 +454,17 @@ public class Movie implements Serializable{
         public String iso6391;
         @SerializedName("name")
         public String name;
+
+        public String toString(List<SpokenLanguages> sls){
+            String out = "[";
+            for(SpokenLanguages s:sls){
+                out = out + "{\"iso_639_1\":\""+s.iso6391+"\","+
+                        "\"name\":\""+s.name+"\"},";
+            }
+
+            if(sls.size()>0) return out.substring(0,out.length()-1) + "]";
+            else return out + "]";
+        }
     }
 
     public static class Cast implements Serializable{
@@ -417,6 +512,35 @@ public class Movie implements Serializable{
         public List<Crew> getCrew() {
             return crew;
         }
+        @Override
+        public String toString(){
+            String out = "{\"cast\":[";
+            for(Cast c: cast){
+                out = out + "{\"cast_id\":"+c.cast_id+","+
+                            "\"character\":\""+c.character.replace("\"","\\\"")+"\","+
+                            "\"credit_id\":\""+c.credit_id+"\","+
+                            "\"id\":"+c.id+","+
+                            "\"name\":\""+c.name+"\","+
+                            "\"order\":"+c.order+","+
+                            "\"profile_path\":\""+c.profile_path+"\"},";
+            }
+
+            if(cast.size()>0) out = out.substring(0,out.length()-1) + "],\"crew\":[";
+            else out = out + "],";
+
+            for(Crew c: crew){
+                out = out + "{\"credit_id\":\""+c.credit_id+"\","+
+                        "\"department\":\""+c.department+"\","+
+                        "\"id\":"+c.id+","+
+                        "\"job\":\""+c.job+"\","+
+                        "\"name\":\""+c.name+"\","+
+                        "\"profile_path\":\""+c.profile_path+"\"},";
+            }
+            if(cast.size()>0) out = out.substring(0,out.length()-1) + "]}";
+            else out = out + "]}";
+            return out;
+        }
+
     }
 }
 

@@ -3,13 +3,13 @@ package jfkdevelopers.movielibrary;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 import com.google.gson.Gson;
 
@@ -18,6 +18,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static jfkdevelopers.movielibrary.MovieAdapter.SER_KEY;
 
 public class Search extends AppCompatActivity {
     String searchTitle;
@@ -28,8 +30,10 @@ public class Search extends AppCompatActivity {
 
     RecyclerView rv;
     RecyclerView.LayoutManager rvLM;
-    TMDBMovieAdapter mAdapter;
-    List<TMDBMovie> searchResults = new ArrayList<>();
+
+    MovieAdapter moAdapter;
+    List<Movie> detailedSearchResults = new ArrayList<>();
+    ArrayList<Movie> selectedMovies = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,16 +51,40 @@ public class Search extends AppCompatActivity {
         url = urlStart + searchTitle.replace(" ", "+");
 
         new SearchMovies().execute();
-        mAdapter = new TMDBMovieAdapter(this,searchResults);
-        rv.setAdapter(mAdapter);
-        //Log.e(TAG,url);
+        //mAdapter = new TMDBMovieAdapter(this,searchResults);
+        moAdapter = new MovieAdapter(this,detailedSearchResults);
+        rv.setAdapter(moAdapter);
     }
 
-    public void sendToMain(int id){
-        Intent intent = new Intent();
-        intent.putExtra("movieId",id);
+    public void addToSelected(Movie m){
+        selectedMovies.add(m);
+    }
+
+    public void moviesToBeAdded(){
+        Bundle mBundle = new Bundle();
+        mBundle.putSerializable(SER_KEY,selectedMovies);
+        Intent intent = new Intent(this,MainActivity.class);
+        intent.putExtras(mBundle);
         setResult(RESULT_OK,intent);
         finish();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.menu_search, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        if (menuItem.getItemId() == android.R.id.home) {
+            //moviesToBeAdded();
+            finish();
+        }
+        else if (menuItem.getItemId() == R.id.action_add){
+            moviesToBeAdded();
+        }
+        return super.onOptionsItemSelected(menuItem);
     }
 
     private class SearchMovies extends AsyncTask<Void, Void, Void> {
@@ -81,10 +109,14 @@ public class Search extends AppCompatActivity {
                     JSONArray results = jsonObj.getJSONArray("results");
                     for(int i=0;i<results.length();i++){
                         JSONObject temp = results.getJSONObject(i);
+                        url = "https://api.themoviedb.org/3/movie/" + temp.get("id") + "?api_key=13de0f310da7852b09b07e6a9f3a16ae&append_to_response=credits";
+                        String movieStr = sh.makeServiceCall(url);
                         Gson gson = new Gson();
-                        TMDBMovie m = gson.fromJson(temp.toString(),TMDBMovie.class);
+                        //TMDBMovie m = gson.fromJson(temp.toString(),TMDBMovie.class);
+                        Movie m = gson.fromJson(movieStr,Movie.class);
                         if(m!=null){
-                            searchResults.add(m);
+                            //searchResults.add(m);
+                            detailedSearchResults.add(m);
                         }
                         //Log.e(TAG,temp.toString());
                     }
@@ -117,4 +149,6 @@ public class Search extends AppCompatActivity {
                 pDialog.dismiss();
         }
     }
+
+
 }

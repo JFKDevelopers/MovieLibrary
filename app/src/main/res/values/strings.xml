@@ -34,4 +34,5 @@
     <string name="noTitleError">Search title was blank</string>
     <string name="runtime">Runtime:</string>
     <string name="release_date">Released:</string>
+    <string name="add_to_list">Add to List</string>
 </resources>

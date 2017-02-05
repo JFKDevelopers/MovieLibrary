@@ -12,9 +12,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -24,37 +22,25 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
-import com.google.gson.Gson;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 
-//use an increasing index for the db to make it easier to sort items ??
+//use an increasing index for the db to make it easier to sort items ????
 
 //Pre-testing:
-//Want to be able to add multiple movies from search activity
 //Decide which content to include on main page and detail page
 //Allow movie poster error image to fill the normal space of a movie poster
 
 //BUGS:
 //
+///////
 
 //Not necessary, but would like to have:
 //Have app remember user's sorting preference and add movies in that order
@@ -65,10 +51,7 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
 
     public final static String EXTRA_MESSAGE = "com.jfkdevelopers.movielibrary.MESSAGE";
     private String TAG = MainActivity.class.getSimpleName();
-    private ProgressDialog pDialog;
     final CharSequence[] sortOptions = {"A-Z","Z-A","Year"};
-
-    public String url = "";
     Context context = this;
     List<Movie> movies;
     MovieAdapter mAdapter;
@@ -84,13 +67,11 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         setSupportActionBar(toolbar);
 
         rv = (RecyclerView) findViewById(R.id.recyclerView);
-
         rv.setHasFixedSize(true);
         rvLM = new LinearLayoutManager(this);
         rv.setLayoutManager(rvLM);
 
         movies = db.getAllMovies();
-        //Log.e(TAG,db.getTableAsString());
         mAdapter = new MovieAdapter(this, movies);
         rv.setAdapter(mAdapter);
         setUpItemTouchHelper();
@@ -140,14 +121,21 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
 
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode,resultCode,data);
-        if(requestCode==1){
+        int count = 0;
+        if(requestCode == 1){
             if(resultCode == RESULT_OK){
-                int id = data.getIntExtra("movieId",0);
-                if(!db.movieInTable(id)) {
-                    url = "https://api.themoviedb.org/3/movie/" + id + "?api_key=13de0f310da7852b09b07e6a9f3a16ae&append_to_response=credits";
-                    new GetMovie().execute();
+                ArrayList<Movie> moviesToAdd = (ArrayList<Movie>) data.getSerializableExtra(MovieAdapter.SER_KEY);
+                for(Movie m: moviesToAdd){
+                    if(!db.movieInTable(m.getId())) {
+                        movies.add(m);
+                        db.addMovie(m.getId(), m.toJSONString());
+                        count++;
+                    }
                 }
-                else Toast.makeText(context,"Movie already exists in list",Toast.LENGTH_LONG).show();
+                Snackbar snackbar = Snackbar
+                        .make(rv, count + " movies added", Snackbar.LENGTH_LONG);
+                snackbar.show();
+                mAdapter.notifyDataSetChanged();
             }
         }
     }
@@ -422,57 +410,4 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         });
     }
 
-    private class GetMovie extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // Showing progress dialog
-            pDialog = new ProgressDialog(MainActivity.this);
-            pDialog.setMessage("Please wait...");
-            pDialog.setCancelable(false);
-            pDialog.show();
-        }
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            HttpHandler sh = new HttpHandler();
-            // Making a request to url and getting response
-            Log.e(TAG,url);
-            String jsonStr = sh.makeServiceCall(url);
-            //Log.e(TAG, "Response from url: " + jsonStr);
-            if (jsonStr != null) {
-                try {
-                        Gson gson = new Gson();
-                        Movie m = gson.fromJson(jsonStr,Movie.class);
-                        db.addMovie(m.getId(),jsonStr);
-                        movies.add(m);
-                } catch (final Exception e) {
-                    Log.e(TAG, "Json parsing error: " + e.getMessage());
-                    /*runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(),
-                                    url.substring(url.indexOf("ry=") + 3) + " not found",
-                                    Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                    });*/
-                }
-            } else {
-                Log.e(TAG, "Couldn't get json from server.");
-                Toast.makeText(getApplicationContext(),
-                        "Error downloading information",
-                        Toast.LENGTH_LONG)
-                        .show();
-            }
-            return null;
-        }
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            // Dismiss the progress dialog
-            if (pDialog.isShowing())
-                pDialog.dismiss();
-            mAdapter.notifyDataSetChanged();
-        }
-    }
 }
