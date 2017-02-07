@@ -80,6 +80,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
                         addBtn.setVisibility(View.INVISIBLE);
                         ((Search)context).addToSelected(movieMap.get(id));
                     }
+                    /*else if(context instanceof Popular){
+                        addBtn.setVisibility(View.INVISIBLE);
+                        ((Popular)context).addToSelected(movieMap.get(id));
+                    }*/
                     break;
             }
         }

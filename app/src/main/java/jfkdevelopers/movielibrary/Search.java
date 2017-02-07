@@ -47,8 +47,8 @@ public class Search extends AppCompatActivity {
         rvLM = new LinearLayoutManager(this);
         rv.setLayoutManager(rvLM);
 
-        searchTitle = getIntent().getStringExtra("com.jfkdevelopers.movielibrary.MESSAGE");
-        searchTitle = searchTitle.trim();
+        searchTitle = getIntent().getStringExtra("com.jfkdevelopers.movielibrary.MESSAGE").trim();
+        //searchTitle = searchTitle.trim();
         url = urlStart + searchTitle.replace(" ", "+");
 
         new SearchMovies().execute();
@@ -114,10 +114,8 @@ public class Search extends AppCompatActivity {
                         Gson gson = new Gson();
                         Movie m = gson.fromJson(movieStr,Movie.class);
                         if(m!=null){
-                            //searchResults.add(m);
                             detailedSearchResults.add(m);
                         }
-                        //Log.e(TAG,temp.toString());
                     }
                 } catch (final Exception e) {
                     Log.e(TAG, "Json parsing error: " + e.getMessage());
