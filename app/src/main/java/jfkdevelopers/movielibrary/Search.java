@@ -24,7 +24,7 @@ import static jfkdevelopers.movielibrary.MovieAdapter.SER_KEY;
 
 public class Search extends AppCompatActivity {
     String searchTitle;
-    private static String urlStart = "http://api.themoviedb.org/3/search/movie?api_key=13de0f310da7852b09b07e6a9f3a16ae&sort_by=popularity.desc&query=";
+    private static String urlStart = "http://api.themoviedb.org/3/search/movie?api_key={{API KEY}}&sort_by=popularity.desc&query=";
     public String url = "";
     private String TAG = Search.class.getSimpleName();
     private ProgressDialog pDialog;
