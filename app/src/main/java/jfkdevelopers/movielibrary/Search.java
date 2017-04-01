@@ -109,7 +109,7 @@ public class Search extends AppCompatActivity {
                     JSONArray results = jsonObj.getJSONArray("results");
                     for(int i=0;i<results.length();i++){
                         JSONObject temp = results.getJSONObject(i);
-                        url = "https://api.themoviedb.org/3/movie/" + temp.get("id") + "?api_key=13de0f310da7852b09b07e6a9f3a16ae&append_to_response=credits";
+                        url = "https://api.themoviedb.org/3/movie/" + temp.get("id") + "?api_key={API-KEY}&append_to_response=credits";
                         String movieStr = sh.makeServiceCall(url);
                         Gson gson = new Gson();
                         Movie m = gson.fromJson(movieStr,Movie.class);
